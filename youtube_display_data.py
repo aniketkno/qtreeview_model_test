@@ -23,20 +23,28 @@ class AppDemo(QMainWindow):
         self.resize(500, 700)
 
         treeView = QTreeView()
+        print("treeView: ", treeView)
         treeView.setHeaderHidden(True)
-        treeModel = QStandardItemModel()
-        rootNode = treeModel.invisibleRootItem()
+        self.treeModel = QStandardItemModel()
+        print("self.treeModel: ", self.treeModel)
+        rootNode = self.treeModel.invisibleRootItem()
+        print("rootNode: ", rootNode)
 
         '---------------------------------------'
-
+        # why is california and america on the same row?
         america = StandardItem('America', 16, set_bold=True)
+        print("america: ", america)
 
         california = StandardItem('California', 14, set_bold=True)
+        print("california: ", california)
         america.appendRow(california)
         
         oakland = StandardItem('Oakland', 12, color=QColor(155,0,0))
+        print("oakland: ", oakland)
         sanfrancisco = StandardItem('San Francisco', 12, color=QColor(155,0,0))
+        print("sanfrancisco: ", sanfrancisco)
         sanjose = StandardItem('San Jose', 12, color=QColor(155,0,0))
+        print("sanjose: ", sanjose)
         california.appendRow(oakland)
         california.appendRow(sanfrancisco)
         california.appendRow(sanjose)
@@ -58,19 +66,36 @@ class AppDemo(QMainWindow):
         canada.appendRows([alberta, britishcolumbia,ontario])
 
         rootNode.appendRow(america)
+
         rootNode.appendRow(canada)
 
-        treeView.setModel(treeModel)
+        treeView.setModel(self.treeModel)
         treeView.expandAll()
+
+
+        level = 0
+        tree_list = []
+        for i in range(self.treeModel.rowCount()):
+            tm = self.treeModel.item(i)
+            print(tm.data(0))
+            treev = self.getInfo(tm, level)
 
         treeView.doubleClicked.connect(self.getValue)
 
         self.setCentralWidget(treeView)
 
-    def getValue(self, val):
-        print(val.data())
-        print(val.row())
-        print(val.column())
+    def getInfo(self, item, level):
+        if item.hasChildren():
+            # print(item.rowCount())
+            # print(item.columnCount())
+            level+=1
+            for i in range(item.rowCount()):
+                for j in range(item.columnCount()):
+                    print("-"*level+item.child(i,j).data(0))
+                    self.getInfo( item.child(i,j), level)
+        # else:
+        #     print("no children")
+
 
 
 app = QApplication(sys.argv)
